@@ -299,6 +299,76 @@ h1 span {
   background: var(--line);
 }
 
+.leaderboard-section {
+  margin-top: 48px;
+}
+
+.leaderboard-caption {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.leaderboard-table {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 0.55fr 1.6fr 0.8fr 0.8fr 1.15fr 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--line);
+  background: #10182b;
+  font-size: 0.9rem;
+}
+
+.leaderboard-row:first-child {
+  border-top: 0;
+}
+
+.leaderboard-header {
+  color: var(--muted);
+  background: #0e1627;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.current-user-row {
+  background: linear-gradient(90deg, var(--accent-soft), #10182b 55%);
+}
+
+.current-user-row em {
+  display: inline-block;
+  margin-left: 7px;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 750;
+}
+
+.leaderboard-empty-state {
+  padding: 28px;
+  border: 1px dashed var(--line);
+  border-radius: 16px;
+  background: rgba(16, 24, 43, 0.65);
+}
+
+.leaderboard-empty-state p {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.leaderboard-empty-state span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .error-message {
   margin-top: 32px;
   border-color: rgba(255, 155, 155, 0.45);
@@ -322,5 +392,13 @@ h1 span {
   .section-heading {
     align-items: start;
     flex-direction: column;
+  }
+
+  .leaderboard-table {
+    overflow-x: auto;
+  }
+
+  .leaderboard-row {
+    min-width: 620px;
   }
 }

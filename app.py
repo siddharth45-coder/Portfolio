@@ -6,6 +6,7 @@ from badges import calculate_badges
 from contributions_api import get_contribution_calendar, get_contribution_days
 from daily_goal import calculate_daily_goal
 from github_api import get_github_profile
+from leaderboard import rank_leaderboard
 from streak_calculator import calculate_streaks
 from streak_warning import calculate_streak_warning
 from xp_calculator import calculate_xp_summary
@@ -42,6 +43,9 @@ def get_dashboard_data() -> tuple[dict | None, str | None]:
     dashboard_data["streak_warning"] = calculate_streak_warning(
         contribution_days, current_streak
     )
+    # There is currently no multi-user data source. Keep this empty rather
+    # than inventing users; rank_leaderboard is ready for future real records.
+    dashboard_data["leaderboard"] = rank_leaderboard([])
     return dashboard_data, None
 
 

@@ -134,6 +134,44 @@
             {% endfor %}
           </div>
         </section>
+
+        <section class="leaderboard-section" aria-labelledby="leaderboard-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">COMMUNITY</p>
+              <h2 id="leaderboard-title">Leaderboard</h2>
+            </div>
+            <p class="leaderboard-caption">Ranked by total XP</p>
+          </div>
+
+          {% if data.leaderboard %}
+            <div class="leaderboard-table" role="table" aria-label="CodeStreak leaderboard">
+              <div class="leaderboard-row leaderboard-header" role="row">
+                <span role="columnheader">Rank</span>
+                <span role="columnheader">Developer</span>
+                <span role="columnheader">XP</span>
+                <span role="columnheader">Level</span>
+                <span role="columnheader">Contributions</span>
+                <span role="columnheader">Streak</span>
+              </div>
+              {% for user in data.leaderboard %}
+                <div class="leaderboard-row {% if user.is_current_user %}current-user-row{% endif %}" role="row">
+                  <span role="cell">#{{ user.rank }}</span>
+                  <span role="cell">@{{ user.username }}{% if user.is_current_user %}<em>You</em>{% endif %}</span>
+                  <span role="cell">{{ user.total_xp }}</span>
+                  <span role="cell">{{ user.level }}</span>
+                  <span role="cell">{{ user.total_contributions }}</span>
+                  <span role="cell">{{ user.current_streak }} days</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="leaderboard-empty-state">
+              <p>No connected developers yet.</p>
+              <span>The leaderboard will appear when real multi-user activity is available.</span>
+            </div>
+          {% endif %}
+        </section>
       {% endif %}
     </section>
   </main>
