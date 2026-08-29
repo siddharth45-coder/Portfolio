@@ -134,6 +134,97 @@ h1 span {
   margin-top: 12px;
 }
 
+.badges-section {
+  margin-top: 48px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
+  margin: 8px 0 0;
+  font-size: 1.6rem;
+  letter-spacing: -0.04em;
+}
+
+.badge-summary {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.badge-card {
+  display: flex;
+  min-height: 132px;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #10182b;
+}
+
+.badge-icon {
+  display: grid;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.badge-card h3 {
+  margin: 2px 0 6px;
+  font-size: 1rem;
+}
+
+.badge-card p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.badge-status {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.badge-unlocked {
+  border-color: rgba(82, 227, 167, 0.5);
+  background: linear-gradient(145deg, var(--accent-soft), #10182b 75%);
+}
+
+.badge-unlocked .badge-icon {
+  color: #062f22;
+  background: var(--accent);
+}
+
+.badge-unlocked .badge-status {
+  color: var(--accent);
+}
+
+.badge-locked {
+  opacity: 0.64;
+}
+
+.badge-locked .badge-icon {
+  color: var(--muted);
+  background: var(--line);
+}
+
 .error-message {
   margin-top: 32px;
   border-color: rgba(255, 155, 155, 0.45);
@@ -150,7 +241,12 @@ h1 span {
 }
 
 @media (max-width: 680px) {
-  .stats-grid {
+  .stats-grid, .badges-grid {
     grid-template-columns: 1fr;
+  }
+
+  .section-heading {
+    align-items: start;
+    flex-direction: column;
   }
 }

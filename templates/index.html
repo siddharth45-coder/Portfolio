@@ -68,6 +68,35 @@
             {% endif %}
           </article>
         </div>
+
+        <section class="badges-section" aria-labelledby="badges-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">ACHIEVEMENTS</p>
+              <h2 id="badges-title">Badges</h2>
+            </div>
+            <p class="badge-summary">
+              {{ data.badges | selectattr('unlocked') | list | length }} / {{ data.badges | length }} unlocked
+            </p>
+          </div>
+
+          <div class="badges-grid">
+            {% for badge in data.badges %}
+              <article class="badge-card {% if badge.unlocked %}badge-unlocked{% else %}badge-locked{% endif %}">
+                <div class="badge-icon" aria-hidden="true">{% if badge.unlocked %}✓{% else %}○{% endif %}</div>
+                <div>
+                  <h3>{{ badge.title }}</h3>
+                  <p>{{ badge.description }}</p>
+                  {% if badge.unlocked %}
+                    <span class="badge-status">Unlocked</span>
+                  {% else %}
+                    <span class="badge-status">{{ badge.value }} / {{ badge.target }}</span>
+                  {% endif %}
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
       {% endif %}
     </section>
   </main>
