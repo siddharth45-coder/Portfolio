@@ -8,6 +8,16 @@
   <section class="detail-section"><h2>Problem</h2><p>{{ problem.problem_statement }}</p></section>
   <div class="example-grid"><section class="detail-section"><h2>Example input</h2><pre>{{ problem.example_input }}</pre></section><section class="detail-section"><h2>Example output</h2><pre>{{ problem.example_output }}</pre></section></div>
   <section class="detail-section"><h2>Constraints</h2><p>{{ problem.constraints }}</p></section>
-  <section class="detail-section"><h2>Starter code</h2><pre>{{ problem.starter_code }}</pre><p class="stat-caption">The editor, test cases, and execution will be added in a later Phase 3 step.</p></section>
+  <section class="workspace" aria-labelledby="workspace-title"><h2 id="workspace-title">Python workspace</h2>
+    {% if message %}<p class="workspace-message">{{ message }}</p>{% endif %}
+    <form method="post" action="{{ url_for('practice_evaluate', problem_id=problem.id) }}">
+      <label class="editor-label" for="code">Code editor <span>Python</span></label>
+      <textarea class="code-editor" id="code" name="code" spellcheck="false">{{ code }}</textarea>
+      <div class="workspace-actions"><a class="reset-code" href="{{ url_for('practice_detail', problem_id=problem.id) }}">Reset code</a><button name="action" value="run" type="submit">Run public tests</button><button class="submit-solution" name="action" value="submit" type="submit">Submit solution</button></div>
+    </form>
+    {% if result %}<section class="test-results"><h3>Test results</h3>{% if result.status != 'ok' %}<p class="result-error">{{ result.status|replace('_', ' ')|title }}</p><pre>{{ result.stderr }}</pre>{% else %}<p class="{% if result.is_solved %}result-success{% else %}result-error{% endif %}">{{ result.passed }} / {{ result.total }} tests passed{% if result.is_solved %} · Solution accepted{% endif %}</p>{% for test in result.public_results %}<p class="test-row {% if test.passed %}result-success{% else %}result-error{% endif %}">Public test {{ loop.index }}: {% if test.passed %}Passed{% else %}Failed{% endif %}{% if not test.passed %} — expected {{ test.expected }}, got {{ test.actual }}{% endif %}</p>{% endfor %}{% if result.total > result.public_results|length %}<p class="stat-caption">Hidden tests were evaluated without revealing their expected outputs.</p>{% endif %}{% endif %}</section>{% endif %}
+    {% if problem.is_solved %}<form method="post" action="{{ url_for('practice_save', problem_id=problem.id) }}"><input type="hidden" name="code" value="{{ code }}"><button class="save-solution" type="submit">Save to GitHub</button></form>{% endif %}
+    <p class="stat-caption">Execution uses a timed child process in a temporary directory. It is development-only isolation, not a production sandbox.</p>
+  </section>
 </article></main></body>
 </html>

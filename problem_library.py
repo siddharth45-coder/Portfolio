@@ -8,6 +8,21 @@ REQUIRED_PROBLEM_FIELDS = (
     "starter_code", "is_solved",
 )
 
+# Test data is kept separate from the public catalogue so hidden cases never
+# reach templates. get_problem() attaches the cases only for server use.
+TEST_CASES = {
+    "sum-array": {"function": "sum_array", "public": [([2, 4, 6], 12)], "hidden": [([1, -1, 5], 5)]},
+    "reverse-string": {"function": "reverse_string", "public": [("code", "edoc")], "hidden": [("", "")]},
+    "count-vowels": {"function": "count_vowels", "public": [("CodeStreak", 4)], "hidden": [("AEIOU", 5)]},
+    "find-maximum": {"function": "find_maximum", "public": [([3, 9, 2, 7], 9)], "hidden": [([-5, -1, -9], -1)]},
+    "linear-search": {"function": "linear_search", "public": [([5, 2, 8], 2, 1)], "hidden": [([5, 2, 8], 9, -1)]},
+    "two-sum": {"function": "two_sum", "public": [([2, 7, 11, 15], 9, [0, 1])], "hidden": [([3, 2, 4], 6, [1, 2])]},
+    "palindrome-check": {"function": "is_palindrome", "public": [("Never odd or even", True)], "hidden": [("Python", False)]},
+    "merge-sort": {"function": "merge_sort", "public": [([4, 1, 3, 2], [1, 2, 3, 4])], "hidden": [([], [])]},
+    "first-duplicate": {"function": "first_duplicate", "public": [([2, 1, 3, 5, 3, 2], 3)], "hidden": [([1, 2, 3], -1)]},
+    "binary-search-range": {"function": "search_range", "public": [([1, 2, 2, 2, 4], 2, [1, 3])], "hidden": [([1, 3, 5], 2, [-1, -1])]},
+}
+
 
 PROBLEMS = (
     {
@@ -117,9 +132,18 @@ def list_problems(
     return problems
 
 
-def get_problem(problem_id: str) -> dict | None:
+def get_problem(problem_id: str, include_tests: bool = False) -> dict | None:
     """Find one problem by its stable ID."""
-    return next((problem for problem in PROBLEMS if problem["id"] == problem_id), None)
+    problem = next((problem for problem in PROBLEMS if problem["id"] == problem_id), None)
+    if problem is None:
+        return None
+    result = dict(problem)
+    if include_tests:
+        test_data = TEST_CASES[problem_id]
+        result["function_name"] = test_data["function"]
+        result["public_tests"] = test_data["public"]
+        result["hidden_tests"] = test_data["hidden"]
+    return result
 
 
 def get_practice_summary() -> dict:
