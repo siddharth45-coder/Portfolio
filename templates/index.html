@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CodeStreak</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="dashboard" aria-labelledby="page-title">
+      <p class="eyebrow">GITHUB ACTIVITY</p>
+      <h1 id="page-title">Code<span>Streak</span></h1>
+
+      {% if error %}
+        <div class="error-message" role="alert">
+          <h2>Data could not be loaded</h2>
+          <p>{{ error }}</p>
+        </div>
+      {% else %}
+        <p class="welcome">Welcome back, <strong>@{{ data.username }}</strong></p>
+
+        <div class="stats-grid">
+          <article class="stat-card contribution-card">
+            <p class="stat-label">Total contributions</p>
+            <p class="stat-value">{{ data.total_contributions }}</p>
+            <p class="stat-caption">This year</p>
+          </article>
+
+          <article class="stat-card">
+            <p class="stat-label">Current streak</p>
+            <p class="stat-value">{{ data.current_streak }}<span> days</span></p>
+            <p class="stat-caption">Keep building</p>
+          </article>
+
+          <article class="stat-card">
+            <p class="stat-label">Longest streak</p>
+            <p class="stat-value">{{ data.longest_streak }}<span> days</span></p>
+            <p class="stat-caption">Your best run</p>
+          </article>
+        </div>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

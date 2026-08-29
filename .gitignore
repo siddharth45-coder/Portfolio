@@ -1,0 +1,9 @@
+# Keep local secrets out of version control.
+.env
+
+# Python-generated files.
+__pycache__/
+*.py[cod]
+
+# Local virtual environment.
+.venv/
