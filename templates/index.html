@@ -69,6 +69,36 @@
           </article>
         </div>
 
+        <section class="daily-goal-section" aria-labelledby="daily-goal-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">TODAY'S FOCUS</p>
+              <h2 id="daily-goal-title">Daily coding goal</h2>
+            </div>
+            {% if data.daily_goal.is_complete %}
+              <p class="goal-status goal-complete">Goal complete</p>
+            {% else %}
+              <p class="goal-status">{{ data.daily_goal.target - data.daily_goal.completed_count }} to go</p>
+            {% endif %}
+          </div>
+
+          <div class="daily-goal-card">
+            <p class="goal-count">
+              {{ data.daily_goal.completed_count }}<span> / {{ data.daily_goal.target }} contributions</span>
+            </p>
+            <div class="progress-track" aria-label="Daily coding goal progress">
+              <div class="progress-bar goal-progress" style="width: {{ data.daily_goal.progress_percent }}%"></div>
+            </div>
+            <p class="stat-caption">
+              {% if data.daily_goal.is_complete %}
+                Great work—today's goal is complete.
+              {% else %}
+                Make {{ data.daily_goal.target }} contributions to complete today's goal.
+              {% endif %}
+            </p>
+          </div>
+        </section>
+
         <section class="badges-section" aria-labelledby="badges-title">
           <div class="section-heading">
             <div>

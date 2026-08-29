@@ -4,6 +4,7 @@ from flask import Flask, render_template
 
 from badges import calculate_badges
 from contributions_api import get_contribution_calendar, get_contribution_days
+from daily_goal import calculate_daily_goal
 from github_api import get_github_profile
 from streak_calculator import calculate_streaks
 from xp_calculator import calculate_xp_summary
@@ -36,6 +37,7 @@ def get_dashboard_data() -> tuple[dict | None, str | None]:
     dashboard_data["badges"] = calculate_badges(
         dashboard_data["total_contributions"], longest_streak, xp_data["level"]
     )
+    dashboard_data["daily_goal"] = calculate_daily_goal(contribution_days)
     return dashboard_data, None
 
 
