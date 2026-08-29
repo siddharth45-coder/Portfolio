@@ -38,6 +38,35 @@
             <p class="stat-value">{{ data.longest_streak }}<span> days</span></p>
             <p class="stat-caption">Your best run</p>
           </article>
+
+          <article class="stat-card xp-card">
+            <p class="stat-label">Total XP</p>
+            <p class="stat-value">{{ data.total_xp }}<span> XP</span></p>
+            <p class="stat-caption">From real GitHub activity</p>
+          </article>
+
+          <article class="stat-card">
+            <p class="stat-label">Current level</p>
+            <p class="stat-value">Level {{ data.level }}</p>
+            <p class="stat-caption">Keep coding to level up</p>
+          </article>
+
+          <article class="stat-card progress-card">
+            <p class="stat-label">Level progress</p>
+            {% if data.next_level %}
+              <p class="progress-copy">{{ data.xp_progress }} / {{ data.xp_needed_for_level }} XP</p>
+              <div class="progress-track" aria-label="Level progress">
+                <div class="progress-bar" style="width: {{ data.progress_percent }}%"></div>
+              </div>
+              <p class="stat-caption">{{ data.xp_to_next_level }} XP to Level {{ data.next_level }}</p>
+            {% else %}
+              <p class="progress-copy">Maximum level reached</p>
+              <div class="progress-track" aria-label="Maximum level reached">
+                <div class="progress-bar" style="width: 100%"></div>
+              </div>
+              <p class="stat-caption">Level {{ data.level }}</p>
+            {% endif %}
+          </article>
         </div>
       {% endif %}
     </section>

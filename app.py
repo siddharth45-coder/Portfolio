@@ -5,6 +5,7 @@ from flask import Flask, render_template
 from contributions_api import get_contribution_calendar, get_contribution_days
 from github_api import get_github_profile
 from streak_calculator import calculate_streaks
+from xp_calculator import calculate_xp_summary
 
 
 app = Flask(__name__)
@@ -21,12 +22,15 @@ def get_dashboard_data() -> tuple[dict | None, str | None]:
     if calendar is None:
         return None, "Unable to load contribution data. Check your token and connection."
 
-    current_streak, longest_streak = calculate_streaks(get_contribution_days(calendar))
+    contribution_days = get_contribution_days(calendar)
+    current_streak, longest_streak = calculate_streaks(contribution_days)
+    xp_data = calculate_xp_summary(contribution_days, current_streak)
     dashboard_data = {
         "username": profile.get("login", "GitHub user"),
         "total_contributions": calendar.get("totalContributions", 0),
         "current_streak": current_streak,
         "longest_streak": longest_streak,
+        **xp_data,
     }
     return dashboard_data, None
 
