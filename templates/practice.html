@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Practice · CodeStreak</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="dashboard practice-dashboard" aria-labelledby="practice-title">
+      <a class="back-link" href="{{ url_for('index') }}">← Dashboard</a>
+      <p class="eyebrow">CODING PRACTICE</p>
+      <h1 id="practice-title">Problem<span>Library</span></h1>
+      <p class="welcome">A focused set of Python problems. Submissions and execution will be added in a later step.</p>
+
+      <div class="practice-stats-grid">
+        <article class="stat-card"><p class="stat-label">Total problems</p><p class="stat-value">{{ summary.total }}</p></article>
+        <article class="stat-card"><p class="stat-label">Solved</p><p class="stat-value">{{ summary.solved }}</p></article>
+        <article class="stat-card"><p class="stat-label">Unsolved</p><p class="stat-value">{{ summary.unsolved }}</p></article>
+        <article class="stat-card"><p class="stat-label">Completion</p><p class="stat-value">{{ summary.completion_percent }}<span>%</span></p></article>
+      </div>
+
+      <section class="practice-progress" aria-label="Practice progress">
+        <div class="section-heading"><h2>Current practice progress</h2><p class="leaderboard-caption">{{ summary.solved }} of {{ summary.total }} solved</p></div>
+        <div class="progress-track"><div class="progress-bar" style="width: {{ summary.completion_percent }}%"></div></div>
+      </section>
+
+      <div class="grouping-grid">
+        <section class="grouping-card"><p class="stat-label">By difficulty</p>{% for level, count in summary.by_difficulty.items() %}<p><span class="difficulty difficulty-{{ level|lower }}">{{ level }}</span> {{ count }} problems</p>{% endfor %}</section>
+        <section class="grouping-card"><p class="stat-label">By topic</p>{% for topic, count in summary.by_topic.items() %}<p><span class="topic-label">{{ topic }}</span> {{ count }}</p>{% endfor %}</section>
+      </div>
+
+      <section class="problem-library" aria-labelledby="library-title">
+        <div class="section-heading"><div><p class="eyebrow">EXPLORE</p><h2 id="library-title">Problems</h2></div><p class="leaderboard-caption">{{ problems|length }} matching</p></div>
+        <form class="filter-form" method="get">
+          <label>Search title<input type="search" name="search" value="{{ filters.search }}" placeholder="e.g. Two Sum"></label>
+          <label>Difficulty<select name="difficulty"><option value="">All</option>{% for level in ['Easy', 'Medium', 'Hard'] %}<option value="{{ level }}" {% if filters.difficulty == level %}selected{% endif %}>{{ level }}</option>{% endfor %}</select></label>
+          <label>Topic<select name="topic"><option value="">All</option>{% for topic in topics %}<option value="{{ topic }}" {% if filters.topic == topic %}selected{% endif %}>{{ topic }}</option>{% endfor %}</select></label>
+          <label>Status<select name="status"><option value="">All</option><option value="solved" {% if filters.status == 'solved' %}selected{% endif %}>Solved</option><option value="unsolved" {% if filters.status == 'unsolved' %}selected{% endif %}>Unsolved</option></select></label>
+          <button type="submit">Apply filters</button><a class="clear-filters" href="{{ url_for('practice') }}">Clear filters</a>
+        </form>
+        {% if problems %}
+          <div class="problem-grid">{% for problem in problems %}<a class="problem-card" href="{{ url_for('practice_detail', problem_id=problem.id) }}"><div><span class="difficulty difficulty-{{ problem.difficulty|lower }}">{{ problem.difficulty }}</span><span class="topic-label">{{ problem.topic }}</span></div><h3>{{ problem.title }}</h3><p>{{ problem.short_description }}</p><span class="problem-state">{% if problem.is_solved %}Solved{% else %}Unsolved{% endif %} · {{ problem.language }} →</span></a>{% endfor %}</div>
+        {% else %}
+          <div class="leaderboard-empty-state"><p>No problems match these filters.</p><span>Try clearing a filter or searching for a different title.</span></div>
+        {% endif %}
+      </section>
+    </section>
+  </main>
+</body>
+</html>

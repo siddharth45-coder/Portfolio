@@ -1,12 +1,13 @@
 """A small Flask dashboard for the GitHub contribution and streak data."""
 
-from flask import Flask, render_template
+from flask import Flask, abort, render_template, request
 
 from badges import calculate_badges
 from contributions_api import get_contribution_calendar, get_contribution_days
 from daily_goal import calculate_daily_goal
 from github_api import get_github_profile
 from leaderboard import rank_leaderboard
+from problem_library import get_practice_summary, get_problem, list_problems
 from streak_calculator import calculate_streaks
 from streak_warning import calculate_streak_warning
 from xp_calculator import calculate_xp_summary
@@ -54,6 +55,31 @@ def index():
     """Render the dashboard or an understandable error message."""
     dashboard_data, error = get_dashboard_data()
     return render_template("index.html", data=dashboard_data, error=error)
+
+
+@app.route("/practice")
+def practice():
+    """Render the self-contained, storage-free practice problem library."""
+    filters = {
+        "search": request.args.get("search", ""),
+        "difficulty": request.args.get("difficulty", ""),
+        "topic": request.args.get("topic", ""),
+        "status": request.args.get("status", ""),
+    }
+    return render_template(
+        "practice.html", summary=get_practice_summary(),
+        problems=list_problems(**filters), filters=filters,
+        topics=sorted(get_practice_summary()["by_topic"]),
+    )
+
+
+@app.route("/practice/<problem_id>")
+def practice_detail(problem_id: str):
+    """Render a problem statement; editor and execution arrive in a later step."""
+    problem = get_problem(problem_id)
+    if problem is None:
+        abort(404)
+    return render_template("problem_detail.html", problem=problem)
 
 
 if __name__ == "__main__":

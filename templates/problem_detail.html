@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ problem.title }} · CodeStreak</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><main class="page-shell"><article class="dashboard problem-detail" aria-labelledby="problem-title">
+  <a class="back-link" href="{{ url_for('practice') }}">← Problem library</a>
+  <p class="eyebrow">{{ problem.topic }} · {{ problem.language }}</p><h1 id="problem-title">{{ problem.title }}</h1>
+  <div class="problem-meta"><span class="difficulty difficulty-{{ problem.difficulty|lower }}">{{ problem.difficulty }}</span><span class="topic-label">{{ problem.topic }}</span><span class="problem-state">{% if problem.is_solved %}Solved{% else %}Unsolved{% endif %}</span></div>
+  <section class="detail-section"><h2>Problem</h2><p>{{ problem.problem_statement }}</p></section>
+  <div class="example-grid"><section class="detail-section"><h2>Example input</h2><pre>{{ problem.example_input }}</pre></section><section class="detail-section"><h2>Example output</h2><pre>{{ problem.example_output }}</pre></section></div>
+  <section class="detail-section"><h2>Constraints</h2><p>{{ problem.constraints }}</p></section>
+  <section class="detail-section"><h2>Starter code</h2><pre>{{ problem.starter_code }}</pre><p class="stat-caption">The editor, test cases, and execution will be added in a later Phase 3 step.</p></section>
+</article></main></body>
+</html>
