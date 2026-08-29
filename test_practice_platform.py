@@ -41,6 +41,11 @@ class PracticePlatformTests(unittest.TestCase):
         self.assertEqual((reward["awarded_xp"], duplicate["awarded_xp"]), (10, 0))
         self.assertEqual(calculate_practice_xp(reward["rewarded_problem_ids"], list(PROBLEMS)), 10)
 
+    def test_practice_xp_matches_each_difficulty(self):
+        self.assertEqual(award_practice_xp([], "easy", "Easy")["awarded_xp"], 10)
+        self.assertEqual(award_practice_xp([], "medium", "Medium")["awarded_xp"], 20)
+        self.assertEqual(award_practice_xp([], "hard", "Hard")["awarded_xp"], 30)
+
     def test_github_path_generation(self):
         self.assertEqual(build_practice_path(get_problem("two-sum")), "practice/python/arrays/two-sum.py")
 
