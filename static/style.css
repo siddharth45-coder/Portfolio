@@ -67,6 +67,36 @@ h1 span {
   color: var(--text);
 }
 
+.streak-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 190, 92, 0.55);
+  border-radius: 14px;
+  background: rgba(255, 190, 92, 0.1);
+  color: #ffd18a;
+}
+
+.streak-warning p {
+  margin: 0;
+  font-weight: 650;
+}
+
+.warning-icon {
+  display: grid;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffd18a;
+  color: #523000;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

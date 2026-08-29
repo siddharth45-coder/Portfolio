@@ -20,6 +20,13 @@
       {% else %}
         <p class="welcome">Welcome back, <strong>@{{ data.username }}</strong></p>
 
+        {% if data.streak_warning.is_at_risk %}
+          <aside class="streak-warning" role="status">
+            <span class="warning-icon" aria-hidden="true">!</span>
+            <p>{{ data.streak_warning.message }}</p>
+          </aside>
+        {% endif %}
+
         <div class="stats-grid">
           <article class="stat-card contribution-card">
             <p class="stat-label">Total contributions</p>
