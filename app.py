@@ -10,7 +10,7 @@ from daily_challenge import get_daily_challenge
 from daily_goal import calculate_daily_goal
 from github_api import get_github_profile
 from leaderboard import rank_leaderboard
-from github_practice import build_practice_path, get_repository_name, save_solution_to_github
+from github_practice import build_practice_path, get_repository_branch, get_repository_name, save_solution_to_github
 from problem_library import PROBLEMS, get_problem, list_problems
 from practice_evaluator import evaluate_solution
 from practice_analytics import TOPIC_DEFINITIONS, calculate_practice_statistics, calculate_topic_progress
@@ -190,10 +190,21 @@ def coding_lab_submit(problem_id: str):
     github_status = "GitHub save unavailable. Your local session submission remains successful."
     token = os.getenv("GITHUB_TOKEN")
     repository = get_repository_name()
+    branch = get_repository_branch()
     # The token is only used server-side by the existing Contents API helper.
-    if token and repository and "/" in repository and get_github_profile():
+    if not token:
+        github_status = "GitHub save skipped: GITHUB_TOKEN is missing from the local environment."
+    elif not repository or "/" not in repository:
+        github_status = "GitHub save skipped: the origin repository is not configured."
+    elif not branch:
+        github_status = "GitHub save skipped: the target branch could not be determined."
+    elif not get_github_profile():
+        github_status = "GitHub save skipped: token authentication could not be verified."
+    else:
         owner, repository_name = repository.split("/", 1)
-        save_result = save_solution_to_github(token, owner, repository_name, build_practice_path(problem), source)
+        save_result = save_solution_to_github(
+            token, owner, repository_name, build_practice_path(problem), source, branch
+        )
         github_status = save_result["message"]
 
     submitted_ids.append(problem_id)
