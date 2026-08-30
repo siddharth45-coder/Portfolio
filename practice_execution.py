@@ -8,6 +8,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 
@@ -28,19 +29,22 @@ def execute_python_solution(source: str, function_name: str, cases: list[tuple])
         script = Path(directory) / "solution.py"
         script.write_text(harness, encoding="utf-8")
         try:
+            started_at = time.perf_counter()
             result = subprocess.run(
                 [sys.executable, "-I", str(script)], cwd=directory, text=True,
                 capture_output=True, timeout=EXECUTION_TIMEOUT_SECONDS,
             )
         except subprocess.TimeoutExpired:
-            return {"status": "timeout", "stdout": "", "stderr": "Execution timed out.", "results": []}
+            return {"status": "timeout", "stdout": "", "stderr": "Execution timed out.", "results": [], "execution_ms": EXECUTION_TIMEOUT_SECONDS * 1000}
+
+    execution_ms = round((time.perf_counter() - started_at) * 1000, 2)
 
     stdout, stderr = result.stdout[:MAX_OUTPUT_CHARS], result.stderr[:MAX_OUTPUT_CHARS]
     if result.returncode != 0:
         status = "syntax_error" if "SyntaxError" in stderr else "runtime_error"
-        return {"status": status, "stdout": stdout, "stderr": stderr, "results": []}
+        return {"status": status, "stdout": stdout, "stderr": stderr, "results": [], "execution_ms": execution_ms}
     try:
         results = json.loads(stdout)
     except json.JSONDecodeError:
-        return {"status": "runtime_error", "stdout": stdout, "stderr": "Solution returned unreadable output.", "results": []}
-    return {"status": "ok", "stdout": stdout, "stderr": stderr, "results": results}
+        return {"status": "runtime_error", "stdout": stdout, "stderr": "Solution returned unreadable output.", "results": [], "execution_ms": execution_ms}
+    return {"status": "ok", "stdout": stdout, "stderr": stderr, "results": results, "execution_ms": execution_ms}

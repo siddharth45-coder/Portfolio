@@ -6,13 +6,16 @@ from flask import Flask, abort, render_template, request, session
 
 from badges import calculate_badges
 from contributions_api import get_contribution_calendar, get_contribution_days
+from daily_challenge import get_daily_challenge
 from daily_goal import calculate_daily_goal
 from github_api import get_github_profile
 from leaderboard import rank_leaderboard
 from github_practice import build_practice_path, get_repository_name, save_solution_to_github
-from problem_library import PROBLEMS, get_practice_summary, get_problem, list_problems
+from problem_library import PROBLEMS, get_problem, list_problems
 from practice_evaluator import evaluate_solution
-from practice_rewards import award_practice_xp, calculate_practice_xp
+from practice_analytics import TOPIC_DEFINITIONS, calculate_practice_statistics, calculate_topic_progress
+from practice_rewards import award_practice_xp
+from submission_history import record_submission
 from streak_calculator import calculate_streaks
 from streak_warning import calculate_streak_warning
 from xp_calculator import calculate_xp_summary
@@ -22,6 +25,22 @@ app = Flask(__name__)
 # Set FLASK_SECRET_KEY in production. This development fallback only signs the
 # session that stores solved practice IDs; it is not a GitHub credential.
 app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY", "codestreak-development-session-key")
+
+
+def get_practice_data() -> dict:
+    """Build all session-scoped practice data in one place for practice pages."""
+    solved_ids = set(session.get("solved_problem_ids", []))
+    rewarded_ids = session.get("rewarded_problem_ids", [])
+    submissions = session.get("submission_history", [])
+    statistics = calculate_practice_statistics(PROBLEMS, solved_ids, rewarded_ids, submissions)
+    return {
+        "solved_ids": solved_ids,
+        "rewarded_ids": rewarded_ids,
+        "submissions": submissions,
+        "statistics": statistics,
+        "topic_progress": calculate_topic_progress(PROBLEMS, solved_ids),
+        "daily_challenge": get_daily_challenge(PROBLEMS, solved_ids),
+    }
 
 
 def get_dashboard_data() -> tuple[dict | None, str | None]:
@@ -74,17 +93,21 @@ def practice():
         "topic": request.args.get("topic", ""),
         "status": request.args.get("status", ""),
     }
-    solved_ids = set(session.get("solved_problem_ids", []))
-    problems = [dict(problem, is_solved=problem["id"] in solved_ids) for problem in list_problems(**filters)]
-    summary = get_practice_summary()
-    summary["solved"] = len(solved_ids)
-    summary["unsolved"] = summary["total"] - summary["solved"]
-    summary["completion_percent"] = round(summary["solved"] / summary["total"] * 100) if summary["total"] else 0
+    practice_data = get_practice_data()
+    # Solved state belongs to the signed browser session, not static library data.
+    library_filters = dict(filters, status="")
+    problems = [dict(problem, is_solved=problem["id"] in practice_data["solved_ids"]) for problem in list_problems(**library_filters)]
+    if filters["status"] == "solved":
+        problems = [problem for problem in problems if problem["is_solved"]]
+    elif filters["status"] == "unsolved":
+        problems = [problem for problem in problems if not problem["is_solved"]]
     return render_template(
-        "practice.html", summary=summary,
+        "practice.html", summary=practice_data["statistics"],
         problems=problems, filters=filters,
-        topics=sorted(get_practice_summary()["by_topic"]),
-        practice_xp=calculate_practice_xp(session.get("rewarded_problem_ids", []), list(PROBLEMS)),
+        topics=TOPIC_DEFINITIONS,
+        daily_challenge=practice_data["daily_challenge"],
+        topic_progress=practice_data["topic_progress"],
+        submissions=practice_data["submissions"],
     )
 
 
@@ -107,6 +130,10 @@ def practice_evaluate(problem_id: str):
     source = request.form.get("code", "")
     is_submission = request.form.get("action") == "submit"
     result = evaluate_solution(problem, source, include_hidden=is_submission)
+    # Keep every Run/Submit attempt in session history, with no source or hidden data.
+    session["submission_history"] = record_submission(
+        session.get("submission_history", []), problem, result
+    )
     message = None
     if is_submission and result["is_solved"]:
         solved_ids = session.get("solved_problem_ids", [])

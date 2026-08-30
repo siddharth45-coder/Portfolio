@@ -1,53 +1,11 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Practice · CodeStreak</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <main class="page-shell">
-    <section class="dashboard practice-dashboard" aria-labelledby="practice-title">
-      <a class="back-link" href="{{ url_for('index') }}">← Dashboard</a>
-      <p class="eyebrow">CODING PRACTICE</p>
-      <h1 id="practice-title">Problem<span>Library</span></h1>
-      <p class="welcome">A focused set of Python problems. Submissions and execution will be added in a later step.</p>
-
-      <p class="practice-xp">Practice XP: <strong>{{ practice_xp }}</strong> <span>Easy +10 · Medium +20 · Hard +30</span></p>
-      <div class="practice-stats-grid">
-        <article class="stat-card"><p class="stat-label">Total problems</p><p class="stat-value">{{ summary.total }}</p></article>
-        <article class="stat-card"><p class="stat-label">Solved</p><p class="stat-value">{{ summary.solved }}</p></article>
-        <article class="stat-card"><p class="stat-label">Unsolved</p><p class="stat-value">{{ summary.unsolved }}</p></article>
-        <article class="stat-card"><p class="stat-label">Completion</p><p class="stat-value">{{ summary.completion_percent }}<span>%</span></p></article>
-      </div>
-
-      <section class="practice-progress" aria-label="Practice progress">
-        <div class="section-heading"><h2>Current practice progress</h2><p class="leaderboard-caption">{{ summary.solved }} of {{ summary.total }} solved</p></div>
-        <div class="progress-track"><div class="progress-bar" style="width: {{ summary.completion_percent }}%"></div></div>
-      </section>
-
-      <div class="grouping-grid">
-        <section class="grouping-card"><p class="stat-label">By difficulty</p>{% for level, count in summary.by_difficulty.items() %}<p><span class="difficulty difficulty-{{ level|lower }}">{{ level }}</span> {{ count }} problems</p>{% endfor %}</section>
-        <section class="grouping-card"><p class="stat-label">By topic</p>{% for topic, count in summary.by_topic.items() %}<p><span class="topic-label">{{ topic }}</span> {{ count }}</p>{% endfor %}</section>
-      </div>
-
-      <section class="problem-library" aria-labelledby="library-title">
-        <div class="section-heading"><div><p class="eyebrow">EXPLORE</p><h2 id="library-title">Problems</h2></div><p class="leaderboard-caption">{{ problems|length }} matching</p></div>
-        <form class="filter-form" method="get">
-          <label>Search title<input type="search" name="search" value="{{ filters.search }}" placeholder="e.g. Two Sum"></label>
-          <label>Difficulty<select name="difficulty"><option value="">All</option>{% for level in ['Easy', 'Medium', 'Hard'] %}<option value="{{ level }}" {% if filters.difficulty == level %}selected{% endif %}>{{ level }}</option>{% endfor %}</select></label>
-          <label>Topic<select name="topic"><option value="">All</option>{% for topic in topics %}<option value="{{ topic }}" {% if filters.topic == topic %}selected{% endif %}>{{ topic }}</option>{% endfor %}</select></label>
-          <label>Status<select name="status"><option value="">All</option><option value="solved" {% if filters.status == 'solved' %}selected{% endif %}>Solved</option><option value="unsolved" {% if filters.status == 'unsolved' %}selected{% endif %}>Unsolved</option></select></label>
-          <button type="submit">Apply filters</button><a class="clear-filters" href="{{ url_for('practice') }}">Clear filters</a>
-        </form>
-        {% if problems %}
-          <div class="problem-grid">{% for problem in problems %}<a class="problem-card" href="{{ url_for('practice_detail', problem_id=problem.id) }}"><div><span class="difficulty difficulty-{{ problem.difficulty|lower }}">{{ problem.difficulty }}</span><span class="topic-label">{{ problem.topic }}</span></div><h3>{{ problem.title }}</h3><p>{{ problem.short_description }}</p><span class="problem-state">{% if problem.is_solved %}Solved{% else %}Unsolved{% endif %} · {{ problem.language }} →</span></a>{% endfor %}</div>
-        {% else %}
-          <div class="leaderboard-empty-state"><p>No problems match these filters.</p><span>Try clearing a filter or searching for a different title.</span></div>
-        {% endif %}
-      </section>
-    </section>
-  </main>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Practice · CodeStreak</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><main class="page-shell"><section class="dashboard practice-dashboard"><a class="back-link" href="{{ url_for('index') }}">← Dashboard</a><p class="eyebrow">CODING PRACTICE</p><h1>Practice<span>Platform</span></h1><p class="welcome">Build skill with curated Python problems, verified submissions, and clear progress.</p>
+{% if daily_challenge %}<section class="daily-challenge"><div><p class="eyebrow">TODAY · {{ daily_challenge.date }}</p><h2>Daily Challenge: {{ daily_challenge.problem.title }}</h2><p><span class="difficulty difficulty-{{ daily_challenge.problem.difficulty|lower }}">{{ daily_challenge.problem.difficulty }}</span><span class="topic-label">{{ daily_challenge.problem.topic }}</span><span class="problem-state">{% if daily_challenge.problem.is_solved %}Solved{% else %}Unsolved{% endif %}</span></p><p class="stat-caption">{{ daily_challenge.xp_reward }} practice XP on first successful solution; never duplicated.</p></div><a class="challenge-link" href="{{ url_for('practice_detail', problem_id=daily_challenge.problem.id) }}">Open challenge →</a></section>{% endif %}
+<p class="practice-xp">Practice XP: <strong>{{ summary.practice_xp }}</strong> <span>Easy +10 · Medium +20 · Hard +30</span></p><div class="practice-stats-grid"><article class="stat-card"><p class="stat-label">Total problems</p><p class="stat-value">{{ summary.total }}</p></article><article class="stat-card"><p class="stat-label">Solved</p><p class="stat-value">{{ summary.solved }}</p></article><article class="stat-card"><p class="stat-label">Unsolved</p><p class="stat-value">{{ summary.unsolved }}</p></article><article class="stat-card"><p class="stat-label">Completion</p><p class="stat-value">{{ summary.completion_percent }}<span>%</span></p></article></div>
+<section class="practice-progress"><div class="section-heading"><h2>Current practice progress</h2><p class="leaderboard-caption">{{ summary.solved }} of {{ summary.total }} solved</p></div><div class="progress-track"><div class="progress-bar" style="width: {{ summary.completion_percent }}%"></div></div></section>
+<section class="practice-insights"><div class="section-heading"><div><p class="eyebrow">PERSONAL</p><h2>Practice statistics</h2></div></div><div class="grouping-grid"><article class="grouping-card"><p class="stat-label">Solved by difficulty</p>{% for difficulty, count in summary.solved_by_difficulty.items() %}<p><span class="difficulty difficulty-{{ difficulty|lower }}">{{ difficulty }}</span> {{ count }} solved</p>{% endfor %}</article><article class="grouping-card"><p class="stat-label">Submissions</p><p>{{ summary.successful_submissions }} successful / {{ summary.submission_count }} total</p><p>{{ summary.success_rate }}% success rate</p><p class="stat-caption">Most practiced: {{ summary.most_practiced_topics|join(', ') if summary.most_practiced_topics else 'No submissions yet' }}</p></article></div></section>
+<section class="skill-progress"><div class="section-heading"><div><p class="eyebrow">SKILLS</p><h2>Topic progress</h2></div><p class="leaderboard-caption">Progress is based on solved problems</p></div><div class="topic-progress-grid">{% for topic in topic_progress %}<article class="topic-progress-card"><div><h3>{{ topic.name }}</h3><span>{{ topic.solved }} / {{ topic.total }} solved</span></div><div class="progress-track"><div class="progress-bar" style="width: {{ topic.completion_percent }}%"></div></div><p>{{ topic.completion_percent }}% · Easy {{ topic.difficulty_distribution.Easy }} · Medium {{ topic.difficulty_distribution.Medium }} · Hard {{ topic.difficulty_distribution.Hard }}</p></article>{% endfor %}</div></section>
+<section class="submission-history"><div class="section-heading"><div><p class="eyebrow">RECENT</p><h2>Submission history</h2></div><p class="leaderboard-caption">Session only</p></div>{% if submissions %}<div class="history-list">{% for submission in submissions %}<article class="history-row"><div><strong>{{ submission.title }}</strong><span>{{ submission.language }} · {{ submission.topic }}</span></div><div><span class="{% if submission.passed %}result-success{% else %}result-error{% endif %}">{% if submission.passed %}Passed{% else %}{{ submission.result|replace('_', ' ')|title }}{% endif %}</span><span>{{ submission.execution_ms if submission.execution_ms is not none else '—' }} ms · {{ submission.timestamp }}</span></div></article>{% endfor %}</div>{% else %}<div class="leaderboard-empty-state"><p>No submissions yet.</p><span>Run public tests or submit a solution to see your recent history.</span></div>{% endif %}</section>
+<section class="problem-library"><div class="section-heading"><div><p class="eyebrow">EXPLORE</p><h2>Problems</h2></div><p class="leaderboard-caption">{{ problems|length }} matching</p></div><form class="filter-form" method="get"><label>Search title<input type="search" name="search" value="{{ filters.search }}" placeholder="e.g. Two Sum"></label><label>Difficulty<select name="difficulty"><option value="">All</option>{% for level in ['Easy', 'Medium', 'Hard'] %}<option value="{{ level }}" {% if filters.difficulty == level %}selected{% endif %}>{{ level }}</option>{% endfor %}</select></label><label>Topic<select name="topic"><option value="">All</option>{% for topic in topics %}<option value="{{ topic }}" {% if filters.topic == topic %}selected{% endif %}>{{ topic }}</option>{% endfor %}</select></label><label>Status<select name="status"><option value="">All</option><option value="solved" {% if filters.status == 'solved' %}selected{% endif %}>Solved</option><option value="unsolved" {% if filters.status == 'unsolved' %}selected{% endif %}>Unsolved</option></select></label><button type="submit">Apply filters</button><a class="clear-filters" href="{{ url_for('practice') }}">Clear filters</a></form>{% if problems %}<div class="problem-grid">{% for problem in problems %}<a class="problem-card" href="{{ url_for('practice_detail', problem_id=problem.id) }}"><div><span class="difficulty difficulty-{{ problem.difficulty|lower }}">{{ problem.difficulty }}</span><span class="topic-label">{{ problem.topic }}</span></div><h3>{{ problem.title }}</h3><p>{{ problem.short_description }}</p><span class="problem-state">{% if problem.is_solved %}Solved{% else %}Unsolved{% endif %} · {{ problem.language }} →</span></a>{% endfor %}</div>{% else %}<div class="leaderboard-empty-state"><p>No problems match these filters.</p><span>Try clearing a filter or searching for a different title.</span></div>{% endif %}</section>
+</section></main></body></html>
