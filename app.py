@@ -128,6 +128,35 @@ def practice():
     )
 
 
+@app.route("/coding-lab")
+@app.route("/coding-lab/<problem_id>")
+def coding_lab(problem_id: str | None = None):
+    """Render the Three.js coding lab around an existing practice problem."""
+    problem = get_problem(problem_id or PROBLEMS[0]["id"], include_tests=True)
+    if problem is None:
+        abort(404)
+    problem["is_solved"] = problem["id"] in session.get("solved_problem_ids", [])
+    return render_template(
+        "coding_lab.html", problem=problem, problems=PROBLEMS,
+        code=problem["starter_code"], result=None,
+    )
+
+
+@app.post("/coding-lab/<problem_id>/run")
+def coding_lab_run(problem_id: str):
+    """Run public tests through the established Phase 3 evaluator."""
+    problem = get_problem(problem_id, include_tests=True)
+    if problem is None:
+        abort(404)
+    source = request.form.get("code", "")
+    result = evaluate_solution(problem, source, include_hidden=False)
+    problem["is_solved"] = problem_id in session.get("solved_problem_ids", [])
+    return render_template(
+        "coding_lab.html", problem=problem, problems=PROBLEMS,
+        code=source, result=result,
+    )
+
+
 @app.post("/practice/preferences")
 def practice_preferences():
     """Store only supported, non-secret preferences in the signed session."""
