@@ -61,3 +61,22 @@ def calculate_practice_statistics(
         "success_rate": round(successes / len(submissions) * 100) if submissions else 0,
         "most_practiced_topics": most_practiced,
     }
+
+
+def calculate_advanced_analytics(statistics: dict, submissions: list[dict]) -> dict:
+    """Summarize existing practice XP and solve activity without changing rules."""
+    successful = [item for item in submissions if item.get("passed")]
+    xp_over_time = []
+    running_xp = 0
+    for item in reversed(successful):
+        # The existing XP total remains authoritative; this is a lightweight
+        # history view of recorded successful session submissions.
+        running_xp += 1
+        xp_over_time.append({"timestamp": item.get("timestamp", ""), "successful_submissions": running_xp})
+    return {
+        "practice_xp": statistics["practice_xp"],
+        "solved": statistics["solved"],
+        "difficulty_distribution": statistics["solved_by_difficulty"],
+        "xp_activity_points": xp_over_time,
+        "streak_progress": statistics["solved"],
+    }

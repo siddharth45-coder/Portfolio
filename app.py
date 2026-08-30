@@ -14,11 +14,16 @@ from github_practice import build_practice_path, get_repository_name, save_solut
 from problem_library import PROBLEMS, get_problem, list_problems
 from practice_evaluator import evaluate_solution
 from practice_analytics import TOPIC_DEFINITIONS, calculate_practice_statistics, calculate_topic_progress
+from practice_analytics import calculate_advanced_analytics
+from practice_preferences import DEFAULT_PREFERENCES, normalize_preferences
+from recommendations import recommend_problems
 from practice_rewards import award_practice_xp
 from submission_history import record_submission
+from milestones import calculate_milestones
 from streak_calculator import calculate_streaks
 from streak_warning import calculate_streak_warning
 from xp_calculator import calculate_xp_summary
+from weekly_challenge import get_weekly_challenge
 
 
 app = Flask(__name__)
@@ -32,14 +37,21 @@ def get_practice_data() -> dict:
     solved_ids = set(session.get("solved_problem_ids", []))
     rewarded_ids = session.get("rewarded_problem_ids", [])
     submissions = session.get("submission_history", [])
+    preferences = normalize_preferences(session.get("practice_preferences", DEFAULT_PREFERENCES))
     statistics = calculate_practice_statistics(PROBLEMS, solved_ids, rewarded_ids, submissions)
+    topic_progress = calculate_topic_progress(PROBLEMS, solved_ids)
+    weekly_challenge = get_weekly_challenge(PROBLEMS, solved_ids)
     return {
         "solved_ids": solved_ids,
         "rewarded_ids": rewarded_ids,
         "submissions": submissions,
-        "statistics": statistics,
-        "topic_progress": calculate_topic_progress(PROBLEMS, solved_ids),
+        "statistics": statistics, "preferences": preferences,
+        "topic_progress": topic_progress,
         "daily_challenge": get_daily_challenge(PROBLEMS, solved_ids),
+        "weekly_challenge": weekly_challenge,
+        "recommendations": recommend_problems(PROBLEMS, solved_ids, preferences, submissions),
+        "milestones": calculate_milestones(statistics, topic_progress, weekly_challenge),
+        "advanced_analytics": calculate_advanced_analytics(statistics, submissions),
     }
 
 
@@ -108,7 +120,24 @@ def practice():
         daily_challenge=practice_data["daily_challenge"],
         topic_progress=practice_data["topic_progress"],
         submissions=practice_data["submissions"],
+        preferences=practice_data["preferences"],
+        weekly_challenge=practice_data["weekly_challenge"],
+        recommendations=practice_data["recommendations"],
+        milestones=practice_data["milestones"],
+        advanced_analytics=practice_data["advanced_analytics"],
     )
+
+
+@app.post("/practice/preferences")
+def practice_preferences():
+    """Store only supported, non-secret preferences in the signed session."""
+    session["practice_preferences"] = normalize_preferences({
+        "language": request.form.get("language"),
+        "topics": request.form.getlist("topics"),
+        "difficulty": request.form.get("difficulty"),
+        "weekly_goal": request.form.get("weekly_goal"),
+    })
+    return practice()
 
 
 @app.route("/practice/<problem_id>")
