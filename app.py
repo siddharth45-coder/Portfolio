@@ -136,9 +136,15 @@ def coding_lab(problem_id: str | None = None):
     if problem is None:
         abort(404)
     problem["is_solved"] = problem["id"] in session.get("solved_problem_ids", [])
+    return render_lab(problem, problem["starter_code"], None)
+
+
+def render_lab(problem: dict, code: str, result: dict | None, message: str | None = None):
+    """Render the lab consistently without sending secrets to the browser."""
     return render_template(
-        "coding_lab.html", problem=problem, problems=PROBLEMS,
-        code=problem["starter_code"], result=None,
+        "coding_lab.html", problem=problem, problems=PROBLEMS, code=code,
+        result=result, message=message,
+        lab_history=session.get("coding_lab_history", [])[:5],
     )
 
 
@@ -151,10 +157,56 @@ def coding_lab_run(problem_id: str):
     source = request.form.get("code", "")
     result = evaluate_solution(problem, source, include_hidden=False)
     problem["is_solved"] = problem_id in session.get("solved_problem_ids", [])
-    return render_template(
-        "coding_lab.html", problem=problem, problems=PROBLEMS,
-        code=source, result=result,
+    return render_lab(problem, source, result)
+
+
+@app.post("/coding-lab/<problem_id>/submit")
+def coding_lab_submit(problem_id: str):
+    """Submit with hidden tests, existing XP, history, and token-safe GitHub save."""
+    problem = get_problem(problem_id, include_tests=True)
+    if problem is None:
+        abort(404)
+    source = request.form.get("code", "")
+    result = evaluate_solution(problem, source, include_hidden=True)
+    if not result["is_solved"]:
+        history = record_submission(session.get("submission_history", []), problem, result)
+        session["submission_history"] = history
+        session["coding_lab_history"] = history
+        problem["is_solved"] = problem_id in session.get("solved_problem_ids", [])
+        return render_lab(problem, source, result, "Submission failed. Fix the tests before submitting again.")
+
+    submitted_ids = session.get("coding_lab_submitted_ids", [])
+    if problem_id in submitted_ids:
+        problem["is_solved"] = True
+        return render_lab(problem, source, result, "This solution was already submitted safely; no duplicate XP or GitHub commit was created.")
+
+    solved_ids = session.get("solved_problem_ids", [])
+    if problem_id not in solved_ids:
+        solved_ids.append(problem_id)
+        session["solved_problem_ids"] = solved_ids
+    reward = award_practice_xp(session.get("rewarded_problem_ids", []), problem_id, problem["difficulty"])
+    session["rewarded_problem_ids"] = reward["rewarded_problem_ids"]
+
+    github_status = "GitHub save unavailable. Your local session submission remains successful."
+    token = os.getenv("GITHUB_TOKEN")
+    repository = get_repository_name()
+    # The token is only used server-side by the existing Contents API helper.
+    if token and repository and "/" in repository and get_github_profile():
+        owner, repository_name = repository.split("/", 1)
+        save_result = save_solution_to_github(token, owner, repository_name, build_practice_path(problem), source)
+        github_status = save_result["message"]
+
+    submitted_ids.append(problem_id)
+    session["coding_lab_submitted_ids"] = submitted_ids
+    history = record_submission(
+        session.get("submission_history", []), problem, result,
+        xp_earned=reward["awarded_xp"], github_status=github_status,
     )
+    session["submission_history"] = history
+    session["coding_lab_history"] = history
+    problem["is_solved"] = True
+    message = f"Solution submitted. You earned {reward['awarded_xp']} practice XP. {github_status}"
+    return render_lab(problem, source, result, message)
 
 
 @app.post("/practice/preferences")
