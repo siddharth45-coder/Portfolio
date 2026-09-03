@@ -10,7 +10,6 @@ from daily_challenge import get_daily_challenge
 from daily_goal import calculate_daily_goal
 from github_api import get_github_profile
 from leaderboard import rank_leaderboard
-from github_practice import build_practice_path, get_repository_branch, get_repository_name, save_solution_to_github
 from problem_library import PROBLEMS, get_problem, list_problems
 from practice_evaluator import evaluate_solution
 from practice_analytics import TOPIC_DEFINITIONS, calculate_practice_statistics, calculate_topic_progress
@@ -162,7 +161,7 @@ def coding_lab_run(problem_id: str):
 
 @app.post("/coding-lab/<problem_id>/submit")
 def coding_lab_submit(problem_id: str):
-    """Submit with hidden tests, existing XP, history, and token-safe GitHub save."""
+    """Submit with hidden tests, XP, and local session history only."""
     problem = get_problem(problem_id, include_tests=True)
     if problem is None:
         abort(404)
@@ -178,7 +177,7 @@ def coding_lab_submit(problem_id: str):
     submitted_ids = session.get("coding_lab_submitted_ids", [])
     if problem_id in submitted_ids:
         problem["is_solved"] = True
-        return render_lab(problem, source, result, "This solution was already submitted safely; no duplicate XP or GitHub commit was created.")
+        return render_lab(problem, source, result, "This solution was already submitted safely; no duplicate XP was created.")
 
     solved_ids = session.get("solved_problem_ids", [])
     if problem_id not in solved_ids:
@@ -187,36 +186,16 @@ def coding_lab_submit(problem_id: str):
     reward = award_practice_xp(session.get("rewarded_problem_ids", []), problem_id, problem["difficulty"])
     session["rewarded_problem_ids"] = reward["rewarded_problem_ids"]
 
-    github_status = "GitHub save unavailable. Your local session submission remains successful."
-    token = os.getenv("GITHUB_TOKEN")
-    repository = get_repository_name()
-    branch = get_repository_branch()
-    # The token is only used server-side by the existing Contents API helper.
-    if not token:
-        github_status = "GitHub save skipped: GITHUB_TOKEN is missing from the local environment."
-    elif not repository or "/" not in repository:
-        github_status = "GitHub save skipped: the origin repository is not configured."
-    elif not branch:
-        github_status = "GitHub save skipped: the target branch could not be determined."
-    elif not get_github_profile():
-        github_status = "GitHub save skipped: token authentication could not be verified."
-    else:
-        owner, repository_name = repository.split("/", 1)
-        save_result = save_solution_to_github(
-            token, owner, repository_name, build_practice_path(problem), source, branch
-        )
-        github_status = save_result["message"]
-
     submitted_ids.append(problem_id)
     session["coding_lab_submitted_ids"] = submitted_ids
     history = record_submission(
         session.get("submission_history", []), problem, result,
-        xp_earned=reward["awarded_xp"], github_status=github_status,
+        xp_earned=reward["awarded_xp"],
     )
     session["submission_history"] = history
     session["coding_lab_history"] = history
     problem["is_solved"] = True
-    message = f"Solution submitted. You earned {reward['awarded_xp']} practice XP. {github_status}"
+    message = f"Solution submitted. You earned {reward['awarded_xp']} practice XP."
     return render_lab(problem, source, result, message)
 
 
@@ -234,7 +213,7 @@ def practice_preferences():
 
 @app.route("/practice/<problem_id>")
 def practice_detail(problem_id: str):
-    """Render a problem statement; editor and execution arrive in a later step."""
+    """Render a problem statement and its coding workspace."""
     problem = get_problem(problem_id, include_tests=True)
     if problem is None:
         abort(404)
@@ -266,29 +245,6 @@ def practice_evaluate(problem_id: str):
         message = f"Solved! You earned {reward['awarded_xp']} practice XP." if reward["awarded_xp"] else "Solved! Practice XP was already awarded."
     problem["is_solved"] = problem_id in session.get("solved_problem_ids", [])
     return render_template("problem_detail.html", problem=problem, code=source, result=result, message=message)
-
-
-@app.post("/practice/<problem_id>/save")
-def practice_save(problem_id: str):
-    """Save a verified solution to the authenticated user's GitHub repository."""
-    problem = get_problem(problem_id, include_tests=True)
-    if problem is None:
-        abort(404)
-    source = request.form.get("code", "")
-    message = "Solve all required tests before saving this solution."
-    if problem_id in session.get("solved_problem_ids", []):
-        profile = get_github_profile()
-        token = os.getenv("GITHUB_TOKEN")
-        repository = get_repository_name()
-        if profile and token and repository and "/" in repository:
-            owner, repository_name = repository.split("/", 1)
-            # Remote ownership is authoritative; never send the token to HTML.
-            save_result = save_solution_to_github(token, owner, repository_name, build_practice_path(problem), source)
-            message = save_result["message"]
-        else:
-            message = "GitHub repository configuration is unavailable."
-    problem["is_solved"] = problem_id in session.get("solved_problem_ids", [])
-    return render_template("problem_detail.html", problem=problem, code=source, result=None, message=message)
 
 
 if __name__ == "__main__":
