@@ -1,60 +1,51 @@
-"""CodeStreak GitHub activity dashboard."""
+"""Siddharth.dev — data-driven developer portfolio."""
 
-import os
+import json
+from pathlib import Path
 
-from flask import Flask, render_template
-
-from badges import calculate_badges
-from contributions_api import get_contribution_calendar, get_contribution_days
-from daily_goal import calculate_daily_goal
-from github_api import get_github_profile
-from leaderboard import rank_leaderboard
-from streak_calculator import calculate_streaks
-from streak_warning import calculate_streak_warning
-from xp_calculator import calculate_xp_summary
+from flask import Flask, abort, render_template
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY", "codestreak-development-session-key")
+app.config["SECRET_KEY"] = "siddharth-dev-portfolio"
+
+PROJECTS_FILE = Path(__file__).resolve().parent / "data" / "projects.json"
 
 
-def get_dashboard_data() -> tuple[dict | None, str | None]:
-    """Collect the GitHub activity data used by the dashboard only."""
-    profile = get_github_profile()
-    if profile is None:
-        return None, "Unable to load your GitHub profile. Check your token and connection."
-
-    calendar = get_contribution_calendar()
-    if calendar is None:
-        return None, "Unable to load contribution data. Check your token and connection."
-
-    contribution_days = get_contribution_days(calendar)
-    current_streak, longest_streak = calculate_streaks(contribution_days)
-    xp_data = calculate_xp_summary(contribution_days, current_streak)
-
-    dashboard_data = {
-        "username": profile.get("login", "GitHub user"),
-        "total_contributions": calendar.get("totalContributions", 0),
-        "current_streak": current_streak,
-        "longest_streak": longest_streak,
-        **xp_data,
-    }
-    dashboard_data["badges"] = calculate_badges(
-        dashboard_data["total_contributions"], longest_streak, xp_data["level"]
-    )
-    dashboard_data["daily_goal"] = calculate_daily_goal(contribution_days)
-    dashboard_data["streak_warning"] = calculate_streak_warning(
-        contribution_days, current_streak
-    )
-    dashboard_data["leaderboard"] = rank_leaderboard([])
-    return dashboard_data, None
+def load_projects() -> list[dict]:
+    """Load portfolio projects from the editable JSON data file."""
+    with PROJECTS_FILE.open("r", encoding="utf-8") as file:
+        return json.load(file)
 
 
 @app.route("/")
 def index():
-    """Render the GitHub activity dashboard."""
-    dashboard_data, error = get_dashboard_data()
-    return render_template("index.html", data=dashboard_data, error=error)
+    """Render the project-first portfolio homepage."""
+    return render_template("index.html", projects=load_projects())
+
+
+@app.route("/info")
+def info():
+    """Render the portfolio information page."""
+    return render_template("info.html")
+
+
+@app.route("/project/<slug>")
+def project_detail(slug: str):
+    """Render a project case study from the project data file."""
+    projects = load_projects()
+    project = next((item for item in projects if item["slug"] == slug), None)
+    if project is None:
+        abort(404)
+
+    current_index = projects.index(project)
+    next_project = projects[(current_index + 1) % len(projects)] if projects else None
+    return render_template("project.html", project=project, next_project=next_project)
+
+
+@app.route("/health")
+def health():
+    return {"status": "ok"}
 
 
 if __name__ == "__main__":
