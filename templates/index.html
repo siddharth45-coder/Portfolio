@@ -11,175 +11,30 @@
     <section class="dashboard" aria-labelledby="page-title">
       <p class="eyebrow">GITHUB ACTIVITY</p>
       <h1 id="page-title">Code<span>Streak</span></h1>
-
       {% if error %}
-        <div class="error-message" role="alert">
-          <h2>Data could not be loaded</h2>
-          <p>{{ error }}</p>
-        </div>
+        <div class="error-message" role="alert"><h2>Data could not be loaded</h2><p>{{ error }}</p></div>
       {% else %}
         <p class="welcome">Welcome back, <strong>@{{ data.username }}</strong></p>
-
-        {% if data.streak_warning.is_at_risk %}
-          <aside class="streak-warning" role="status">
-            <span class="warning-icon" aria-hidden="true">!</span>
-            <p>{{ data.streak_warning.message }}</p>
-          </aside>
-        {% endif %}
-
+        {% if data.streak_warning.is_at_risk %}<aside class="streak-warning" role="status"><span class="warning-icon" aria-hidden="true">!</span><p>{{ data.streak_warning.message }}</p></aside>{% endif %}
         <div class="stats-grid">
-          <article class="stat-card contribution-card">
-            <p class="stat-label">Total contributions</p>
-            <p class="stat-value">{{ data.total_contributions }}</p>
-            <p class="stat-caption">This year</p>
-          </article>
-
-          <article class="stat-card">
-            <p class="stat-label">Current streak</p>
-            <p class="stat-value">{{ data.current_streak }}<span> days</span></p>
-            <p class="stat-caption">Keep building</p>
-          </article>
-
-          <article class="stat-card">
-            <p class="stat-label">Longest streak</p>
-            <p class="stat-value">{{ data.longest_streak }}<span> days</span></p>
-            <p class="stat-caption">Your best run</p>
-          </article>
-
-          <article class="stat-card xp-card">
-            <p class="stat-label">Total XP</p>
-            <p class="stat-value">{{ data.total_xp }}<span> XP</span></p>
-            <p class="stat-caption">From real GitHub activity</p>
-          </article>
-
-          <article class="stat-card">
-            <p class="stat-label">Current level</p>
-            <p class="stat-value">Level {{ data.level }}</p>
-            <p class="stat-caption">Keep coding to level up</p>
-          </article>
-
-          <article class="stat-card progress-card">
-            <p class="stat-label">Level progress</p>
-            {% if data.next_level %}
-              <p class="progress-copy">{{ data.xp_progress }} / {{ data.xp_needed_for_level }} XP</p>
-              <div class="progress-track" aria-label="Level progress">
-                <div class="progress-bar" style="width: {{ data.progress_percent }}%"></div>
-              </div>
-              <p class="stat-caption">{{ data.xp_to_next_level }} XP to Level {{ data.next_level }}</p>
-            {% else %}
-              <p class="progress-copy">Maximum level reached</p>
-              <div class="progress-track" aria-label="Maximum level reached">
-                <div class="progress-bar" style="width: 100%"></div>
-              </div>
-              <p class="stat-caption">Level {{ data.level }}</p>
-            {% endif %}
-          </article>
+          <article class="stat-card contribution-card"><p class="stat-label">Total contributions</p><p class="stat-value">{{ data.total_contributions }}</p><p class="stat-caption">This year</p></article>
+          <article class="stat-card"><p class="stat-label">Current streak</p><p class="stat-value">{{ data.current_streak }}<span> days</span></p><p class="stat-caption">Keep building</p></article>
+          <article class="stat-card"><p class="stat-label">Longest streak</p><p class="stat-value">{{ data.longest_streak }}<span> days</span></p><p class="stat-caption">Your best run</p></article>
+          <article class="stat-card xp-card"><p class="stat-label">Total XP</p><p class="stat-value">{{ data.total_xp }}<span> XP</span></p><p class="stat-caption">From real GitHub activity</p></article>
+          <article class="stat-card"><p class="stat-label">Current level</p><p class="stat-value">Level {{ data.level }}</p><p class="stat-caption">Keep coding to level up</p></article>
+          <article class="stat-card progress-card"><p class="stat-label">Level progress</p>{% if data.next_level %}<p class="progress-copy">{{ data.xp_progress }} / {{ data.xp_needed_for_level }} XP</p><div class="progress-track" aria-label="Level progress"><div class="progress-bar" style="width: {{ data.progress_percent }}%"></div></div><p class="stat-caption">{{ data.xp_to_next_level }} XP to Level {{ data.next_level }}</p>{% else %}<p class="progress-copy">Maximum level reached</p><div class="progress-track" aria-label="Maximum level reached"><div class="progress-bar" style="width: 100%"></div></div><p class="stat-caption">Level {{ data.level }}</p>{% endif %}</article>
         </div>
-
-        <a class="practice-link-card" href="{{ url_for('practice') }}">
-          <div>
-            <p class="eyebrow">PHASE 3 · PRACTICE</p>
-            <h2>Build your coding rhythm</h2>
-            <p>Explore curated problems by topic and difficulty.</p>
-          </div>
-          <span aria-hidden="true">→</span>
-        </a>
-
         <section class="daily-goal-section" aria-labelledby="daily-goal-title">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">TODAY'S FOCUS</p>
-              <h2 id="daily-goal-title">Daily coding goal</h2>
-            </div>
-            {% if data.daily_goal.is_complete %}
-              <p class="goal-status goal-complete">Goal complete</p>
-            {% else %}
-              <p class="goal-status">{{ data.daily_goal.target - data.daily_goal.completed_count }} to go</p>
-            {% endif %}
-          </div>
-
-          <div class="daily-goal-card">
-            <p class="goal-count">
-              {{ data.daily_goal.completed_count }}<span> / {{ data.daily_goal.target }} contributions</span>
-            </p>
-            <div class="progress-track" aria-label="Daily coding goal progress">
-              <div class="progress-bar goal-progress" style="width: {{ data.daily_goal.progress_percent }}%"></div>
-            </div>
-            <p class="stat-caption">
-              {% if data.daily_goal.is_complete %}
-                Great work—today's goal is complete.
-              {% else %}
-                Make {{ data.daily_goal.target }} contributions to complete today's goal.
-              {% endif %}
-            </p>
-          </div>
+          <div class="section-heading"><div><p class="eyebrow">TODAY'S FOCUS</p><h2 id="daily-goal-title">Daily coding goal</h2></div>{% if data.daily_goal.is_complete %}<p class="goal-status goal-complete">Goal complete</p>{% else %}<p class="goal-status">{{ data.daily_goal.target - data.daily_goal.completed_count }} to go</p>{% endif %}</div>
+          <div class="daily-goal-card"><p class="goal-count">{{ data.daily_goal.completed_count }}<span> / {{ data.daily_goal.target }} contributions</span></p><div class="progress-track" aria-label="Daily coding goal progress"><div class="progress-bar goal-progress" style="width: {{ data.daily_goal.progress_percent }}%"></div></div><p class="stat-caption">{% if data.daily_goal.is_complete %}Great work—today's goal is complete.{% else %}Make {{ data.daily_goal.target }} contributions to complete today's goal.{% endif %}</p></div>
         </section>
-
         <section class="badges-section" aria-labelledby="badges-title">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">ACHIEVEMENTS</p>
-              <h2 id="badges-title">Badges</h2>
-            </div>
-            <p class="badge-summary">
-              {{ data.badges | selectattr('unlocked') | list | length }} / {{ data.badges | length }} unlocked
-            </p>
-          </div>
-
-          <div class="badges-grid">
-            {% for badge in data.badges %}
-              <article class="badge-card {% if badge.unlocked %}badge-unlocked{% else %}badge-locked{% endif %}">
-                <div class="badge-icon" aria-hidden="true">{% if badge.unlocked %}✓{% else %}○{% endif %}</div>
-                <div>
-                  <h3>{{ badge.title }}</h3>
-                  <p>{{ badge.description }}</p>
-                  {% if badge.unlocked %}
-                    <span class="badge-status">Unlocked</span>
-                  {% else %}
-                    <span class="badge-status">{{ badge.value }} / {{ badge.target }}</span>
-                  {% endif %}
-                </div>
-              </article>
-            {% endfor %}
-          </div>
+          <div class="section-heading"><div><p class="eyebrow">ACHIEVEMENTS</p><h2 id="badges-title">Badges</h2></div><p class="badge-summary">{{ data.badges | selectattr('unlocked') | list | length }} / {{ data.badges | length }} unlocked</p></div>
+          <div class="badges-grid">{% for badge in data.badges %}<article class="badge-card {% if badge.unlocked %}badge-unlocked{% else %}badge-locked{% endif %}"><div class="badge-icon" aria-hidden="true">{% if badge.unlocked %}✓{% else %}○{% endif %}</div><div><h3>{{ badge.title }}</h3><p>{{ badge.description }}</p>{% if badge.unlocked %}<span class="badge-status">Unlocked</span>{% else %}<span class="badge-status">{{ badge.value }} / {{ badge.target }}</span>{% endif %}</div></article>{% endfor %}</div>
         </section>
-
         <section class="leaderboard-section" aria-labelledby="leaderboard-title">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">COMMUNITY</p>
-              <h2 id="leaderboard-title">Leaderboard</h2>
-            </div>
-            <p class="leaderboard-caption">Ranked by total XP</p>
-          </div>
-
-          {% if data.leaderboard %}
-            <div class="leaderboard-table" role="table" aria-label="CodeStreak leaderboard">
-              <div class="leaderboard-row leaderboard-header" role="row">
-                <span role="columnheader">Rank</span>
-                <span role="columnheader">Developer</span>
-                <span role="columnheader">XP</span>
-                <span role="columnheader">Level</span>
-                <span role="columnheader">Contributions</span>
-                <span role="columnheader">Streak</span>
-              </div>
-              {% for user in data.leaderboard %}
-                <div class="leaderboard-row {% if user.is_current_user %}current-user-row{% endif %}" role="row">
-                  <span role="cell">#{{ user.rank }}</span>
-                  <span role="cell">@{{ user.username }}{% if user.is_current_user %}<em>You</em>{% endif %}</span>
-                  <span role="cell">{{ user.total_xp }}</span>
-                  <span role="cell">{{ user.level }}</span>
-                  <span role="cell">{{ user.total_contributions }}</span>
-                  <span role="cell">{{ user.current_streak }} days</span>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="leaderboard-empty-state">
-              <p>No connected developers yet.</p>
-              <span>The leaderboard will appear when real multi-user activity is available.</span>
-            </div>
-          {% endif %}
+          <div class="section-heading"><div><p class="eyebrow">COMMUNITY</p><h2 id="leaderboard-title">Leaderboard</h2></div><p class="leaderboard-caption">Ranked by total XP</p></div>
+          {% if data.leaderboard %}<div class="leaderboard-table" role="table" aria-label="CodeStreak leaderboard"><div class="leaderboard-row leaderboard-header" role="row"><span role="columnheader">Rank</span><span role="columnheader">Developer</span><span role="columnheader">XP</span><span role="columnheader">Level</span><span role="columnheader">Contributions</span><span role="columnheader">Streak</span></div>{% for user in data.leaderboard %}<div class="leaderboard-row {% if user.is_current_user %}current-user-row{% endif %}" role="row"><span role="cell">#{{ user.rank }}</span><span role="cell">@{{ user.username }}{% if user.is_current_user %}<em>You</em>{% endif %}</span><span role="cell">{{ user.total_xp }}</span><span role="cell">{{ user.level }}</span><span role="cell">{{ user.total_contributions }}</span><span role="cell">{{ user.current_streak }} days</span></div>{% endfor %}</div>{% else %}<div class="leaderboard-empty-state"><p>No connected developers yet.</p><span>The leaderboard will appear when real multi-user activity is available.</span></div>{% endif %}
         </section>
       {% endif %}
     </section>
