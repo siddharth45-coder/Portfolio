@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{ project.title }} — project case study by Siddharth.">
+  <title>{{ project.title }} — Siddharth</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    :root{--bg:#090909;--line:#282828;--text:#f3f3f0;--muted:#999;--accent:#52e3a7}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.project-page{width:min(1180px,100%);margin:auto;padding:28px clamp(22px,5vw,56px) 70px}.nav{position:sticky;top:18px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:25px;margin-bottom:90px;padding:10px 12px;border:1px solid #252525;border-radius:999px;background:rgba(12,12,12,.86);backdrop-filter:blur(16px)}.brand{color:var(--text);text-decoration:none;font-weight:850;letter-spacing:-.04em;padding-left:10px}.brand span{color:var(--accent)}.back{color:#999;text-decoration:none;font-size:.8rem;font-weight:750}.back:hover{color:var(--accent)}.github{color:#999;text-decoration:none;font-size:.78rem;font-weight:750;padding-right:10px}.github:hover{color:var(--accent)}.hero{padding:40px 0 120px}.kicker{margin:0 0 22px;color:#666;font-size:.68rem;font-weight:850;letter-spacing:.18em;text-transform:uppercase}.hero h1{max-width:1050px;margin:0;font-size:clamp(4rem,11vw,9.5rem);line-height:.84;letter-spacing:-.09em}.hero-copy{max-width:690px;margin:36px 0 0;color:var(--muted);font-size:1.08rem;line-height:1.75}.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:65px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.meta-item{padding:20px 22px 20px 0}.meta-item+.meta-item{padding-left:22px;border-left:1px solid var(--line)}.meta-label{display:block;margin-bottom:8px;color:#555;font-size:.65rem;font-weight:850;letter-spacing:.16em;text-transform:uppercase}.meta-value{color:#ddd;font-size:.88rem}.tags{display:flex;flex-wrap:wrap;gap:7px}.tag{padding:6px 9px;border:1px solid #303030;border-radius:999px;color:#888;font-size:.68rem}.case{margin-bottom:120px}.case-grid{display:grid;grid-template-columns:.65fr 1.35fr;gap:80px;padding-top:26px;border-top:1px solid var(--line)}.case-grid h2{margin:0;font-size:clamp(1.8rem,3.5vw,3rem);letter-spacing:-.06em}.case-copy{color:var(--muted);line-height:1.8}.case-copy p{margin:0 0 20px}.feature-list{display:grid;gap:0;border-top:1px solid var(--line)}.feature{display:grid;grid-template-columns:50px 1fr;gap:20px;padding:18px 0;border-bottom:1px solid var(--line)}.feature-number{color:#555;font-size:.72rem;font-weight:800}.feature-text{color:#ccc}.visual{min-height:390px;display:grid;place-items:center;margin-bottom:120px;border:1px solid #2c2c2c;border-radius:20px;background:radial-gradient(circle at 50% 30%,#202020,#0d0d0d 68%);overflow:hidden}.visual-inner{text-align:center;padding:50px}.visual-inner .visual-number{color:#555;font-size:.7rem;font-weight:850;letter-spacing:.2em}.visual-inner h2{margin:18px 0 0;max-width:800px;font-size:clamp(2.2rem,5vw,5rem);line-height:.9;letter-spacing:-.075em}.visual-inner h2 em{font-family:Georgia,serif;font-weight:400;color:#aaa}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;padding:11px 17px;border:1px solid var(--text);border-radius:999px;color:#090909;background:var(--text);text-decoration:none;font-size:.82rem;font-weight:800}.btn.secondary{color:var(--text);background:transparent;border-color:#383838}.btn:hover{border-color:var(--accent)}.next{display:flex;justify-content:space-between;gap:25px;padding:30px 0;border-top:1px solid var(--line)}.next a{color:var(--text);text-decoration:none;font-weight:800}.next a:hover{color:var(--accent)}footer{display:flex;justify-content:space-between;gap:20px;padding-top:28px;color:#555;font-size:.72rem}@media(max-width:800px){.nav{top:10px;margin-bottom:55px}.github{display:none}.hero{padding-top:10px;padding-bottom:80px}.meta{grid-template-columns:1fr}.meta-item+.meta-item{padding-left:0;border-left:0;border-top:1px solid var(--line)}.case{margin-bottom:80px}.case-grid{grid-template-columns:1fr;gap:28px}.visual{min-height:300px;margin-bottom:80px}footer{flex-direction:column}}@media(max-width:500px){.project-page{padding-left:16px;padding-right:16px}.hero h1{font-size:clamp(3.5rem,17vw,5rem)}}
+  </style>
+</head>
+<body>
+<main class="project-page">
+  <nav class="nav" aria-label="Project navigation">
+    <a class="brand" href="{{ url_for('index') }}">Siddharth<span>.dev</span></a>
+    <a class="back" href="{{ url_for('index') }}#work">← All work</a>
+    <a class="github" href="https://github.com/siddharth45-coder" target="_blank" rel="noreferrer">GitHub ↗</a>
+  </nav>
+
+  <section class="hero">
+    <p class="kicker">{{ project.number }} · {{ project.category }}</p>
+    <h1>{{ project.title }}</h1>
+    <p class="hero-copy">{{ project.description }}</p>
+    <div class="meta">
+      <div class="meta-item"><span class="meta-label">Role</span><span class="meta-value">{{ project.role }}</span></div>
+      <div class="meta-item"><span class="meta-label">Timeline</span><span class="meta-value">{{ project.timeline }}</span></div>
+      <div class="meta-item"><span class="meta-label">Stack</span><div class="tags">{% for item in project.stack %}<span class="tag">{{ item }}</span>{% endfor %}</div></div>
+    </div>
+    <div class="actions">
+      {% if project.live_url %}<a class="btn" href="{{ project.live_url }}" target="_blank" rel="noreferrer">Live project ↗</a>{% endif %}
+      <a class="btn secondary" href="{{ project.github_url }}" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </section>
+
+  <div class="visual"><div class="visual-inner"><div class="visual-number">PROJECT {{ project.number }}</div><h2>{{ project.short_description }} <em>— built to be useful.</em></h2></div></div>
+
+  <section class="case">
+    <div class="case-grid"><h2>The problem</h2><div class="case-copy"><p>{{ project.problem }}</p></div></div>
+    <div class="case-grid"><h2>The approach</h2><div class="case-copy"><p>{{ project.approach }}</p></div></div>
+  </section>
+
+  <section class="case">
+    <div class="case-grid"><h2>What it does</h2><div class="feature-list">{% for feature in project.features %}<div class="feature"><span class="feature-number">0{{ loop.index }}</span><span class="feature-text">{{ feature }}</span></div>{% endfor %}</div></div>
+  </section>
+
+  <section class="case">
+    <div class="case-grid"><h2>Result</h2><div class="case-copy"><p>{{ project.result }}</p></div></div>
+  </section>
+
+  {% if next_project %}<div class="next"><span style="color:#555;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase">Next project</span><a href="{{ url_for('project_detail', slug=next_project.slug) }}">{{ next_project.title }} →</a></div>{% endif %}
+  <footer><span>Siddharth.dev</span><span>Designed &amp; built with Flask · © 2026</span></footer>
+</main>
+</body>
+</html>
