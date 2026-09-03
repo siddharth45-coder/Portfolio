@@ -5,10 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CodeStreak</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .portfolio-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:-20px 0 42px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(14,22,39,.82);backdrop-filter:blur(10px);position:sticky;top:14px;z-index:10}.portfolio-nav-brand{color:var(--text);font-weight:850;text-decoration:none;letter-spacing:-.02em}.portfolio-nav-brand span{color:var(--accent)}.portfolio-nav-links{display:flex;align-items:center;gap:6px}.portfolio-nav-links a{padding:8px 12px;border-radius:9px;color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:700;transition:.15s ease}.portfolio-nav-links a:hover{color:var(--accent);background:var(--accent-soft)}@media(max-width:600px){.portfolio-nav{align-items:flex-start;flex-direction:column;gap:8px}.portfolio-nav-links{width:100%;overflow-x:auto}.portfolio-nav-links a{white-space:nowrap}.portfolio-nav{margin:-10px 0 32px}}
+  </style>
 </head>
 <body>
   <main class="page-shell">
     <section class="dashboard" aria-labelledby="page-title">
+      <nav class="portfolio-nav" aria-label="Portfolio navigation">
+        <a class="portfolio-nav-brand" href="{{ url_for('index') }}">Code<span>Streak</span></a>
+        <div class="portfolio-nav-links">
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="#projects">Projects</a>
+          <a href="#skills">Skills</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+
       <p class="eyebrow">GITHUB ACTIVITY</p>
       <h1 id="page-title">Code<span>Streak</span></h1>
       {% if error %}
