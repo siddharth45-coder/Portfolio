@@ -18,8 +18,8 @@ def load_projects() -> list[dict]:
         projects = json.load(file)
 
     # Keep project numbering driven by the current list order.
-    # This means adding/removing/reordering projects never requires
-    # manually fixing the visible numbers in projects.json.
+    # Adding/removing/reordering projects never requires manually
+    # fixing the visible numbers in projects.json.
     for index, project in enumerate(projects, start=1):
         project["number"] = f"{index:02d}"
 
@@ -46,8 +46,12 @@ def project_detail(slug: str):
     if project is None:
         abort(404)
 
-    current_index = projects.index(project)
-    next_project = projects[(current_index + 1) % len(projects)] if projects else None
+    # Only show a "Next project" link when another project actually exists.
+    next_project = None
+    if len(projects) > 1:
+        current_index = projects.index(project)
+        next_project = projects[(current_index + 1) % len(projects)]
+
     return render_template("project.html", project=project, next_project=next_project)
 
 
