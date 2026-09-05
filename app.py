@@ -1,4 +1,4 @@
-"""Siddharth.dev — data-driven developer portfolio."""
+"""Siddharth.dev - data-driven developer portfolio."""
 
 import json
 from pathlib import Path
@@ -13,9 +13,17 @@ PROJECTS_FILE = Path(__file__).resolve().parent / "data" / "projects.json"
 
 
 def load_projects() -> list[dict]:
-    """Load portfolio projects from the editable JSON data file."""
+    """Load portfolio projects and assign display numbers dynamically."""
     with PROJECTS_FILE.open("r", encoding="utf-8") as file:
-        return json.load(file)
+        projects = json.load(file)
+
+    # Keep project numbering driven by the current list order.
+    # This means adding/removing/reordering projects never requires
+    # manually fixing the visible numbers in projects.json.
+    for index, project in enumerate(projects, start=1):
+        project["number"] = f"{index:02d}"
+
+    return projects
 
 
 @app.route("/")
